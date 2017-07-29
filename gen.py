@@ -102,7 +102,7 @@ def diamondsquare(dim):
 
 
 def main():
-	rawterrain = diamondsquare(8193)
+	rawterrain = diamondsquare(2049)
 	# print(rawterrain)
 	genImage(rawterrain)
 
