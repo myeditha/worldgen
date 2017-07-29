@@ -40,7 +40,6 @@ def genrand(itr):
 	global maxElev
 	return (maxElev/(itr+1)) * (random.random()-0.5)*2
 
-
 def square(squaredim, arr, itr):
 	# print('entered square')
 	for i in range(0, ((len(arr)//(squaredim))) if (squaredim==1) else ((len(arr)//(squaredim))+1)):
