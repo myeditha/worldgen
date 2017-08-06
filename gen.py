@@ -61,7 +61,7 @@ def checks(i,j,squaredim,arr, itr):
 		midpoint = (arr[xcoord-squaredim][ycoord] + arr[xcoord+squaredim][ycoord] + arr[xcoord][ycoord-squaredim])/3		
 	else:
 		midpoint = (arr[xcoord-squaredim][ycoord] + arr[xcoord+squaredim][ycoord] + arr[xcoord][ycoord-squaredim] + arr[xcoord][ycoord+squaredim])/4
-	arr[xcoord][ycoord] + genrand(itr)
+	arr[xcoord][ycoord] = midpoint + genrand(itr)
 
 def square(squaredim, arr, itr):
 	for i in range(0, ((len(arr)//(squaredim))) if (squaredim==1) else ((len(arr)//(squaredim))+1)):
