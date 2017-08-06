@@ -1,7 +1,16 @@
 from PIL import Image
 import random
+import sys
+import argparse
 
 maxElev = 2048
+
+class Error(Exception):
+	pass
+
+class SizeError(Error):
+	def __init__(self, message):
+		self.message = message
 
 def twoDMax(inputarr):
 	maxvals = []
@@ -30,6 +39,13 @@ def genImage(inputarr, colorChange = False):
 				pixels[i,j] = (int(inputarr[i][j]/divfactor), int(inputarr[i][j]/divfactor), int(inputarr[i][j]/divfactor))
 	img.show()
 
+def saveArray(inputarr, fileName = 'image.txt'):
+	writeTo = open(fileName, 'w')
+	for x in inputarr:
+		for y in x:
+			writeTo.write('%s', y)
+		writeTo.write('\n')
+
 def setCorners(arr, rand=True):
 	global maxElev
 	arr[len(arr)-1][len(arr)-1] = random.random() * maxElev if rand else 0
@@ -38,9 +54,9 @@ def setCorners(arr, rand=True):
 	arr[0][0] = random.random() * maxElev if rand else 0
 	return arr
 
-def createInitial2DArray(size):
+def createInitial2DArray(size, ocean):
 	output = [[0 for x in range(size)] for y in range(size)]
-	return setCorners(output, False)
+	return setCorners(output, ocean)
 
 def genrand(itr):
 	global maxElev
@@ -88,13 +104,31 @@ def diamond(squaredim, arr, itr):
 
 	return square(squaredim//2,arr,itr)
 
-def diamondsquare(dim):
-	initArray = createInitial2DArray(dim)
+def diamondsquare(dim, height, ocean):
+	global maxElev
+	maxElev = height
+	initArray = createInitial2DArray(dim, ocean)
 	return diamond(dim-1,initArray,1)
 
-
 def main():
-	rawterrain = diamondsquare(4097)
-	genImage(postprocessing(rawterrain))
+	parser = argparse.ArgumentParser(description='Randomized terrain generation')
+	parser.add_argument('size', metavar = 'S', type=int, help='size of the image (multiples of two plus one)')
+	parser.add_argument('height', metavar = 'H', type=int, help='height of the image')
+	parser.add_argument('-ocean', action = 'store_true', help='ocean-y')
+	parser.add_argument('--bitmap', action='store_true',help='generate bitmap representation')
+	parser.add_argument('--textfile', action = 'store_true', help = 'generate file representation')
+
+	args = parser.parse_args()
+	
+	if((args.size-1) & (args.size-2)!=0):
+		raise SizeError('Size is not a power of 2 plus 1.')
+
+	rawterrain = diamondsquare(args.size, args.height, args.ocean)
+	resarr = postprocessing(rawterrain)
+
+	if(args.bitmap):
+		genImage(resarr)
+	if(args.textfile):
+		saveArray(resarr)
 
 main()
