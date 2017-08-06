@@ -4,6 +4,7 @@ import sys
 import argparse
 
 maxElev = 2048
+entropy = 1
 
 class Error(Exception):
 	pass
@@ -56,11 +57,12 @@ def setCorners(arr, rand=True):
 
 def createInitial2DArray(size, ocean):
 	output = [[0 for x in range(size)] for y in range(size)]
-	return setCorners(output, ocean)
+	return setCorners(output, not ocean)
 
 def genrand(itr):
 	global maxElev
-	return (maxElev/(itr+1)) * (random.random()-0.5)*2
+	global entropy
+	return (maxElev/(itr+1)/entropy) * (random.random()-0.5)*2
 
 def checks(i,j,squaredim,arr, itr):
 	xcoord = i * squaredim
@@ -104,8 +106,10 @@ def diamond(squaredim, arr, itr):
 
 	return square(squaredim//2,arr,itr)
 
-def diamondsquare(dim, height, ocean):
+def diamondsquare(dim, height, ocean, entr):
 	global maxElev
+	global entropy
+	entropy = entr
 	maxElev = height
 	initArray = createInitial2DArray(dim, ocean)
 	return diamond(dim-1,initArray,1)
@@ -115,15 +119,16 @@ def main():
 	parser.add_argument('size', metavar = 'S', type=int, help='size of the image (multiples of two plus one)')
 	parser.add_argument('height', metavar = 'H', type=int, help='height of the image')
 	parser.add_argument('-ocean', action = 'store_true', help='ocean-y')
+	parser.add_argument('-entropy', type=float, help='how much noise in random values. lower values = more noise.')
 	parser.add_argument('--bitmap', action='store_true',help='generate bitmap representation')
 	parser.add_argument('--textfile', action = 'store_true', help = 'generate file representation')
 
 	args = parser.parse_args()
-	
+
 	if((args.size-1) & (args.size-2)!=0):
 		raise SizeError('Size is not a power of 2 plus 1.')
 
-	rawterrain = diamondsquare(args.size, args.height, args.ocean)
+	rawterrain = diamondsquare(args.size, args.height, args.ocean, args.entropy)
 	resarr = postprocessing(rawterrain)
 
 	if(args.bitmap):
