@@ -1,6 +1,6 @@
 # Welcome to World Generation!
 
-This read me contains a description of the algorithm implemented and used, as well as a brief description of how to use gen.py.
+This read me contains a description of the algorithm implemented and used, as well as a brief description of how to use gen.py for generation.
 
 ## Introduction
 
